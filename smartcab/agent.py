@@ -21,6 +21,7 @@ class LearningAgent(Agent):
         self.alpha = alpha       # Learning factor
         self.acts = [None,'forward','left','right']
         self.t=0
+        self.optimized = False
         ###########
         ## TO DO ##
         ###########
@@ -43,7 +44,16 @@ class LearningAgent(Agent):
         # If 'testing' is True, set epsilon and alpha to 0
         self.t = self.t+1
         #self.epsilon=self.epsilon*0.9999
-        self.epsilon=self.epsilon*0.999
+        #self.epsilon=self.epsilon*0.999
+        if self.optimized == False:
+            self.epsilon=self.epsilon - 0.05
+        else:
+            #self.epsilon=self.alpha**self.t
+            #self.epsilon=1.0/self.t**2
+            #self.epsilon=math.cos(self.alpha*self.t)
+            self.epsilon=self.epsilon*0.99
+
+
         #self.epsilon=self.valid_actions
         if testing==True:
             self.epsilon=0
@@ -65,13 +75,7 @@ class LearningAgent(Agent):
         ## TO DO ##
         ###########
         # Set 'state' as a tuple of relevant data for the agent    
-        #('is_raining', 'is_foggy', 'is_red_light', 'turn_left', 'no_traffic', 'previous_turn_left', 'time_of_day')    
-        #state = (False, True, True, True, False, False, '3AM')
-        #tf = [True,False]
-        #times = ['1AM','2AM','3AM','4AM','5AM','6AM','7AM','8AM','9AM','10AM','11AM','12AM','1PM','2PM','3PM','4PM','5PM','6PM','7PM','8PM','9PM','10PM','11PM','12PM']
-        #        action = random.choice(acts)
-        #state = (random.choice(tf),random.choice(tf),random.choice(tf),random.choice(tf),random.choice(tf),random.choice(tf),random.choice(times))
-        #state = (waypoint,inputs["light"],inputs["oncoming"],inputs["left"],inputs["right"],deadline)
+    
         state = (waypoint,inputs["light"],inputs["oncoming"],inputs["left"],inputs["right"])
 
         return state
@@ -124,8 +128,11 @@ class LearningAgent(Agent):
         #   Otherwise, choose an action with the highest Q-value for the current state
 
         if self.learning==True:
-            a = self.get_maxQ(state=state)
-            action=a[0]
+            if  random.random() <= self.epsilon :
+                action = random.choice(self.acts)
+            else:
+                a = self.get_maxQ(state=state)
+                action=a[0]
             #if a!=None:
             #    action=a[0]
             #else:
@@ -148,7 +155,8 @@ class LearningAgent(Agent):
         #   Use only the learning rate 'alpha' (do not use the discount factor 'gamma')
         #print reward
         #if self.Q[state].has_key(action) == False:
-        self.Q[state][action]=reward
+        #newQ = oldQ * (1 - alpha) + estQ * alpha
+        self.Q[state][action]=self.Q[state][action]*(1-self.alpha)+reward*self.alpha
 
         return
 
@@ -185,7 +193,7 @@ def run():
     #   learning   - set to True to force the driving agent to use Q-learning
     #    * epsilon - continuous value for the exploration factor, default is 1
     #    * alpha   - continuous value for the learning rate, default is 0.5
-    agent = env.create_agent(LearningAgent,learning=True)
+    agent = env.create_agent(LearningAgent,learning=True,alpha=0.9)
     
     ##############
     # Follow the driving agent
@@ -200,8 +208,10 @@ def run():
     #   display      - set to False to disable the GUI if PyGame is enabled
     #   log_metrics  - set to True to log trial and simulation results to /logs
     #   optimized    - set to True to change the default log file name
-
-    sim = Simulator(env, update_delay=0, log_metrics=True,optimized=True)
+    #agent.optimized=False
+    agent.optimized=True
+    sim = Simulator(env, update_delay=0, log_metrics=True,optimized=agent.optimized)
+    #sim = Simulator(env, update_delay=0, log_metrics=True,optimized=True)
     
     ##############
     # Run the simulator
