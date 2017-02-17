@@ -90,7 +90,7 @@ class LearningAgent(Agent):
         ###########
         # Calculate the maximum Q-value of all actions for a given state
 
-        maxQ = max(self.Q[state].items(), key=lambda x: x[1])
+        maxQ = max(self.Q[state].items(), key=lambda x: x[1])[1]
         #print "maxq"
         #print maxQ
         return maxQ 
@@ -128,11 +128,15 @@ class LearningAgent(Agent):
         #   Otherwise, choose an action with the highest Q-value for the current state
 
         if self.learning==True:
-            if  random.random() <= self.epsilon :
+            if  random.random() < self.epsilon :
                 action = random.choice(self.acts)
             else:
-                a = self.get_maxQ(state=state)
-                action=a[0]
+                mq = self.get_maxQ(state=state)
+                na = []
+                for av in self.Q[state] :
+                    if self.Q[state][av] == mq:
+                        na.append(av)
+                action = random.choice(na)
             #if a!=None:
             #    action=a[0]
             #else:
@@ -193,7 +197,7 @@ def run():
     #   learning   - set to True to force the driving agent to use Q-learning
     #    * epsilon - continuous value for the exploration factor, default is 1
     #    * alpha   - continuous value for the learning rate, default is 0.5
-    agent = env.create_agent(LearningAgent,learning=True,alpha=0.9)
+    agent = env.create_agent(LearningAgent,learning=True,alpha=0.7)
     
     ##############
     # Follow the driving agent
