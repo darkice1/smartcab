@@ -13048,9 +13048,11 @@ ZmZmZmZWJ/8Hcoz2UlnJDU4AAAAASUVORK5CYII=
 <div class="text_cell_render border-box-sizing rendered_html">
 <p><strong>答案：</strong></p>
 <ul>
-<li>随机的可靠率在20%以下，认为不合理，奖励分值都是负数表明受到了惩罚。</li>
-<li>随着实验增加输出没有重大变化。</li>
-<li>重大事故在是5%左右，不良决策应该是38%以上。</li>
+<li>随机的可靠率在20%以下。总共bad actions的比例0.35-0.43左右。将近一般都是补量决策。</li>
+<li>从这么高的错误决策和不稳定性来说随机驾驶是不合理的。</li>
+<li>代理对安全的行使有正向奖励，不安全的为负值奖励。如闯红灯是负奖励。</li>
+<li>随着实验数增加，结果没有重大变化。</li>
+<li>这个智能出租车对乘客来说，重大事故在是5%左右，不良决策应该是38%以上。是不安全可靠的。</li>
 </ul>
 
 </div>
@@ -13103,7 +13105,12 @@ ZmZmZmZWJ/8Hcoz2UlnJDU4AAAAASUVORK5CYII=
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p><strong>回答：</strong>应该用light、oncoming、left和right都和安全性有关系。deadline与安全性无关可以不使用。</p>
+<p><strong>回答：</strong></p>
+<ul>
+<li>light、oncoming、left和right都和安全性有关系。因为这些可能产生安全事故，所以应该选择。</li>
+<li>waypoint是应该正确形式的方向和效率有关应该选择。</li>
+<li>deadline只是截止步骤和和安全性无关所以不选择。</li>
+</ul>
 
 </div>
 </div>
@@ -13137,7 +13144,7 @@ ZmZmZmZWJ/8Hcoz2UlnJDU4AAAAASUVORK5CYII=
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <p><strong>回答：</strong> 选择状态是state = (waypoint,inputs["light"],inputs["oncoming"],inputs["left"],inputs["right"])。
-总共是3x2x3x3x3=162个(之前忘记None)。</p>
+总共是4x2x4x4x4=512个。</p>
 
 </div>
 </div>
@@ -16390,7 +16397,6 @@ QmCC
 <li>通过评分应该可以说成功学习了策略，对评分满意。</li>
 <li><strong> 以下是新追加的部分：</strong></li>
 <li>现在改成返回MAXQ为值。如果存在一样的值，从中随机获取一个。</li>
-<li>目前存在一个问题不知道是否可以解决?以目前300次来说，不并一定每次都是A+，有时成绩并不是很好？好像和之前直接用MAXQ有关系。是否有更好或者稳定的办法？自己推测之前更稳定因为是有问题就是负值，正值的时候肯定是对的。对的之后就不用选择了。不过这样对reward有要求，通用性低。</li>
 </ul>
 
 </div>
@@ -16462,7 +16468,7 @@ QmCC
 <div class="text_cell_render border-box-sizing rendered_html">
 <p><strong>回答：</strong></p>
 <ul>
-<li>因为目前next_waypoint并不知道与目标关系所以无法评估未来奖励。这个可理解应该是算关于环境.是不是环境也是同理？只有在与完成最终目标完成有关联的时候才可以使用gamma？</li>
+<li>next_waypoint，inputs构成的，这里面没有与最终目标点的任何关联。所以无法那么从它那里获得的最大期望，从而无法构建gamma。所以无法使用gamma了。如果引入无关的特征做未来奖励实际会对评分造成干扰，效率会更差。</li>
 </ul>
 
 </div>
