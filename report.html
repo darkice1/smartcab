@@ -13144,7 +13144,7 @@ ZmZmZmZWJ/8Hcoz2UlnJDU4AAAAASUVORK5CYII=
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <p><strong>回答：</strong> 选择状态是state = (waypoint,inputs["light"],inputs["oncoming"],inputs["left"],inputs["right"])。
-总共是4x2x4x4x4=512个。</p>
+总共是3x2x4x4x4=384个。</p>
 
 </div>
 </div>
@@ -16429,12 +16429,25 @@ QmCC
 <div class="text_cell_render border-box-sizing rendered_html">
 <p><strong>回答：</strong></p>
 <ul>
+<li>最佳策略应该是没有任何安全违规。并且朝向目标方向行使。</li>
 <li>发现有和预期不一样的，如：('left', 'red', 'left', None, 'left')
 -- forward : -6.39
 -- None : 0.00
 -- right : 0.56
--- left : 0.00 
-和预期不大一样，正确应该停车。感觉应该是测试没有覆盖到。</li>
+-- left : 0.00 </li>
+<li><p>状态定义 (waypoint,inputs["light"],inputs["oncoming"],inputs["left"],inputs["right"])</p>
+</li>
+<li><p>结合上面例子红灯的时候，应该停车但是right是最高分。怀疑应该是没有测试到None的情况。</p>
+</li>
+<li><p>下面这个例子：
+('forward', 'red', 'forward', None, 'left')
+-- forward : -9.14
+-- None : 1.53
+-- right : 0.00
+-- left : -7.06</p>
+</li>
+<li><p>数据完全覆盖了。红灯停车了应该是对的。</p>
+</li>
 </ul>
 
 </div>
@@ -16468,7 +16481,7 @@ QmCC
 <div class="text_cell_render border-box-sizing rendered_html">
 <p><strong>回答：</strong></p>
 <ul>
-<li>next_waypoint，inputs构成的，这里面没有与最终目标点的任何关联。所以无法那么从它那里获得的最大期望，从而无法构建gamma。所以无法使用gamma了。如果引入无关的特征做未来奖励实际会对评分造成干扰，效率会更差。</li>
+<li>next_waypoint，inputs构成的，这里面没有与最终目标点的任何关联，并不能获取如何或者还有多少步才能到达最终目标。所以无法那么从它那里获得的最大期望，也就没有意义。所以无法使用gamma了。另外如果引入无关的特征做未来奖励实际会对评分造成干扰，效率会更差。所以更加不用使用gamma.</li>
 </ul>
 
 </div>
